@@ -1,8 +1,26 @@
 .container {
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
+  flex-direction: column;
+}
+.m-0 {
+  margin: 1rem 0 0;
 }
 canvas {
-  box-shadow: 5px 5px 20px 2px rgba(0, 0, 0, 0.548);
+  box-shadow: 5px 5px 20px 2px rgba(0, 0, 0, 0.39);
+  margin-bottom: 2rem;
+}
+.control {
+  padding: 1rem;
+  width: 30rem;
+  box-shadow: 5px 5px 20px 2px rgba(0, 0, 0, 0.205);
+}
+.control p,
+h2 {
+  margin: 0;
+  font-weight: bold;
+}
+.control img {
+  width: 7rem;
 }

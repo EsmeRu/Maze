@@ -10,17 +10,20 @@
     
 </head>
 <body>
-    <div class="chronometer">
-		<div id="screen">00 : 00 : 00</div>
-	</div>
-    <div class="container">
+    <div class="container m-0">
         <canvas id="canvas" width="700" height="500" >
             El navegador no soporta canvas
         </canvas>
+       <div class="control container">
+           <h2>Controles</h2>
+           <p>Presione la barra espaciadora para pausar y reanudar la música.</p>
+            <div class="container">
+                <p>Utilice las flechas del teclado para moverse.</p>
+            <img src="./assets/controles.png" alt="controles">
+            </div>
+        </div>
     </div>
 
-    
-    
     <script src="./js/main.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
