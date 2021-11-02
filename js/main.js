@@ -269,7 +269,7 @@ function winner(salida) {
       title: "swal-title",
       confirmButton: "confirmBtn",
     },
-    title: "¡Felicidades! \n Has llegado a la salida " + salida,
+    title: `<h1 style="color: #fff; font-size: 2.5rem;">¡Felicidades! \n Has llegado a la salida ${salida}</h1>`,
     background: "transparent",
     confirmButtonText: "Aceptar",
     confirmButtonColor: "#2E6D1D",
