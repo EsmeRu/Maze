@@ -23,13 +23,16 @@ var iPlayer = new Image(),
   iStone = new Image(),
   fondo = new Image();
 
+var newTime = false,
+  acumularTime = 0;
+
 var sounds = new Array();
 for (var x = 0; x <= 6; x++) sounds[x] = new Audio();
 
 var dirPlayer = new Array();
 for (var x = 0; x <= 39; x++) dirPlayer[x] = new Image();
 
-var walk = dirPlayer[0];
+var walk = null;
 
 //Se encarga de pintar todo en pantalla
 function paint(ctx) {
@@ -68,7 +71,6 @@ function paint(ctx) {
 
 //Movimientos de la pintura
 function update() {
-  sounds[0].play();
   for (var i = walls.length - 1; i >= 0; i--) {
     if (player.touch(walls[i])) {
       if (dir == "arriba") player.y += speed;
@@ -92,21 +94,19 @@ function start() {
   window.requestAnimationFrame(start);
   update();
   paint(ctx);
+  startTime();
 }
 
 //inicializa las variables necesarias
 function run() {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
+  walk = dirPlayer[0];
 
   player = new Cuadrado(globalX, globalY, 20, 20, color);
 
   for (var x = 0; x <= 39; x++) {
     dirPlayer[x].src = "assets/player/" + (x + 1) + ".png";
-  }
-
-  for (var x = 0; x <= 6; x++) {
-    sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
   }
 
   iPlayer.src = "assets/player/1.png";
@@ -175,7 +175,6 @@ function run() {
   start();
 }
 
-//Clase Cuadro
 function Cuadrado(x, y, w, h, color) {
   //atributos
   this.x = x;
@@ -201,9 +200,81 @@ function Cuadrado(x, y, w, h, color) {
     }
     return false;
   };
-}
+} //Clase Cuadro
+function winner(salida) {
+  stop();
+  var gif = "";
+  sounds[6].play();
+  if (salida == 1) {
+    gif = "url('./assets/win2.gif')";
+  } else {
+    gif = "url('./assets/win.gif')";
+  }
+  Swal.fire({
+    title: `<h1 style="color: #fff; font-size: 2.5rem;">¡Felicidades! \n Has llegado a la salida ${salida}</h1>`,
+    background: "transparent",
+    confirmButtonText: "Aceptar",
+    confirmButtonColor: "#2E6D1D",
+    backdrop: `
+      rgba(0,0,123,0.4)
+      ${gif}
+      center top
+      no-repeat
+    `,
+  }).then((value) => {
+    run();
+  });
+} //Alerta de ganador
+function warning() {
+  sounds[5].play();
+  Swal.fire({
+    title: "<h1 style='color: #000;'>Por ahí no es</h1>",
+    background: "transparent",
+    backdrop: `
+      rgba(0,0,123,0.4)
+      url("./assets/hey-listen.gif")
+      center center
+      no-repeat
+    `,
+  });
+} //Alerta de camino equivocado
+function startTime() {
+  if (newTime == false) {
+    timeInicial = new Date();
+    control = setInterval(timer, 10);
+    newTime = true;
+  }
+} //Inicio del contador
+function timer() {
+  timeActual = new Date();
+  acumularTime = timeActual - timeInicial;
+  acumularTime2 = new Date();
+  acumularTime2.setTime(acumularTime);
+  ss = acumularTime2.getSeconds();
+  mm = acumularTime2.getMinutes();
+  hh = acumularTime2.getHours() - 18;
+  if (ss < 10) ss = "0" + ss;
+  if (mm < 10) mm = "0" + mm;
+  if (hh < 10) hh = "0" + hh;
+  pantalla.innerHTML = hh + " : " + mm + " : " + ss;
+} //Contador de tiempo
+function stop() {
+  if (newTime == true) {
+    clearInterval(control);
+    newTime = false;
+  }
+} //Stop del tiempo
+function reset() {
+  if (newTime == true) {
+    clearInterval(control);
+    newTime = false;
+  }
+  acumularTime = 0;
+  pantalla.innerHTML = "00 : 00 : 00";
+} //reset del tiempo
 
 document.addEventListener(
+  //Controles
   "keydown",
   function (evt) {
     lastPress = evt.keyCode;
@@ -256,79 +327,14 @@ window.requestAnimationFrame = (function () {
   );
 })();
 
-function winner(salida) {
-  var gif = "";
-  sounds[6].play();
-  if (salida == 1) {
-    gif = "url('./assets/win2.gif')";
-  } else {
-    gif = "url('./assets/win.gif')";
+window.onload = () => {
+  //Sonido de fondo
+  for (var x = 0; x <= 6; x++) {
+    sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
   }
-  Swal.fire({
-    customClass: {
-      title: "swal-title",
-      confirmButton: "confirmBtn",
-    },
-    title: `<h1 style="color: #fff; font-size: 2.5rem;">¡Felicidades! \n Has llegado a la salida ${salida}</h1>`,
-    background: "transparent",
-    confirmButtonText: "Aceptar",
-    confirmButtonColor: "#2E6D1D",
-    backdrop: `
-      rgba(0,0,123,0.4)
-      ${gif}
-      center top
-      no-repeat
-    `,
-  }).then((value) => {
-    location.reload();
-  });
-}
-function warning() {
-  sounds[5].play();
-  Swal.fire({
-    customClass: {
-      confirmButton: "confirm",
-    },
-    title: "<h1 style='color: #000;'>¡Epa! \n Por ahí no es</h1>",
-    background: "transparent",
-    backdrop: `
-      rgba(0,0,123,0.4)
-      url("./assets/hey-listen.gif")
-      center center
-      no-repeat
-    `,
-  });
-}
-
-// var newTime = false;
-//   var acumularTime = 0;
-//   function start() {
-//     if (newTime == false) {
-//       timeInicial = new Date();
-//       control = setInterval(cronometro, 10);
-//       newTime = true;
-//     }
-//   }
-//   function cronometro() {
-//     timeActual = new Date();
-//     acumularTime = timeActual - timeInicial;
-//     acumularTime2 = new Date();
-//     acumularTime2.setTime(acumularTime);
-//     ss = acumularTime2.getSeconds();
-//     mm = acumularTime2.getMinutes();
-//     hh = acumularTime2.getHours() - 18;
-//     if (ss < 10) ss = "0" + ss;
-//     if (mm < 10) mm = "0" + mm;
-//     if (hh < 10) hh = "0" + hh;
-//     pantalla.innerHTML = hh + " : " + mm + " : " + ss;
-//   }
-//   function reset() {
-//     if (newTime == true) {
-//       clearInterval(control);
-//       newTime = false;
-//     }
-//     acumularTime = 0;
-//     pantalla.innerHTML = "00 : 00 : 00";
-//   }
+  sounds[1].loop = true;
+  sounds[1].autoplay = true;
+  sounds[1].load();
+};
 
 window.addEventListener("load", run, false);
