@@ -260,9 +260,9 @@ function winner(salida) {
   var gif = "";
   sounds[6].play();
   if (salida == 1) {
-    gif = "url('/assets/win2.gif')";
+    gif = "url('./assets/win2.gif')";
   } else {
-    gif = "url('/assets/win.gif')";
+    gif = "url('./assets/win.gif')";
   }
   Swal.fire({
     customClass: {
