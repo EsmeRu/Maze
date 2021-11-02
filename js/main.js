@@ -202,7 +202,6 @@ function Cuadrado(x, y, w, h, color) {
   };
 } //Clase Cuadro
 function winner(salida) {
-  stop();
   var gif = "";
   sounds[6].play();
   if (salida == 1) {
@@ -332,9 +331,17 @@ window.onload = () => {
   for (var x = 0; x <= 6; x++) {
     sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
   }
-  sounds[1].loop = true;
-  sounds[1].autoplay = true;
-  sounds[1].load();
+  sounds[2].oncanplaythrough = (event) => {
+    sounds[2].loop = true;
+    var playedPromise = sounds[2].play();
+    if (playedPromise) {
+      playedPromise.catch((e) => {
+        if (e.name === "NotAllowedError" || e.name === "NotSupportedError") {
+          console.log(e.name);
+        }
+      });
+    }
+  };
 };
 
 window.addEventListener("load", run, false);
