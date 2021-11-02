@@ -293,7 +293,7 @@ function warning() {
     background: "transparent",
     backdrop: `
       rgba(0,0,123,0.4)
-      url("/assets/hey-listen.gif")
+      url("./assets/hey-listen.gif")
       center center
       no-repeat
     `,
