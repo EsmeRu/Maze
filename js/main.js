@@ -329,7 +329,7 @@ window.requestAnimationFrame = (function () {
 window.onload = () => {
   //Sonido de fondo
   for (var x = 0; x <= 6; x++) {
-    sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
+    sounds[x].src = "./assets/sound/" + (x + 1) + ".mp3";
   }
   sounds[2].oncanplaythrough = (event) => {
     sounds[2].loop = true;
