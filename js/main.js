@@ -71,6 +71,18 @@ function paint(ctx) {
 
 //Movimientos de la pintura
 function update() {
+  //Sonido de fondo
+  sounds[2].oncanplaythrough = (event) => {
+    sounds[2].loop = true;
+    var playedPromise = sounds[2].play();
+    if (playedPromise) {
+      playedPromise.catch((e) => {
+        if (e.name === "NotAllowedError" || e.name === "NotSupportedError") {
+          console.log(e.name);
+        }
+      });
+    }
+  };
   for (var i = walls.length - 1; i >= 0; i--) {
     if (player.touch(walls[i])) {
       if (dir == "arriba") player.y += speed;
@@ -107,6 +119,9 @@ function run() {
 
   for (var x = 0; x <= 39; x++) {
     dirPlayer[x].src = "assets/player/" + (x + 1) + ".png";
+  }
+  for (var x = 0; x <= 6; x++) {
+    sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
   }
 
   iPlayer.src = "assets/player/1.png";
@@ -326,22 +341,6 @@ window.requestAnimationFrame = (function () {
   );
 })();
 
-window.onload = () => {
-  //Sonido de fondo
-  for (var x = 0; x <= 6; x++) {
-    sounds[x].src = "./assets/sound/" + (x + 1) + ".mp3";
-  }
-  sounds[2].oncanplaythrough = (event) => {
-    sounds[2].loop = true;
-    var playedPromise = sounds[2].play();
-    if (playedPromise) {
-      playedPromise.catch((e) => {
-        if (e.name === "NotAllowedError" || e.name === "NotSupportedError") {
-          console.log(e.name);
-        }
-      });
-    }
-  };
-};
+window.onload = () => {};
 
 window.addEventListener("load", run, false);
