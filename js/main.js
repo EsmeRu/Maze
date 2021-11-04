@@ -57,18 +57,12 @@ function paint(ctx) {
 }
 //Movimientos de la pintura
 function update() {
-  sounds[2].oncanplaythrough = (event) => {
-    sounds[2].loop = true;
-    var playedPromise = sounds[2].play();
-    if (playedPromise) {
-      playedPromise.catch((e) => {
-        if (e.name === "NotAllowedError" || e.name === "NotSupportedError") {
-          console.log(e.name);
-        }
-      });
-    }
-  };
-
+  try {
+    sounds[0].loop = true;
+    sounds[0].play();
+  } catch (e) {
+    console.log(e);
+  }
   if (move) {
     if (lastPress == 38) {
       dir = "arriba";
@@ -94,22 +88,19 @@ function update() {
       dirPlayer.indexOf(walk) >= data && dirPlayer.indexOf(walk) <= data + 8
         ? dirPlayer[dirPlayer.indexOf(walk) + 1]
         : dirPlayer[data];
-  }
 
+    if (player.x < 0 && player.y < 70) warning();
+    if (player.x > 659 && player.y > 400) winner(1);
+    if (player.x < 3 && player.y > 200 && player.y < 300) winner(2);
+  }
   for (var i = walls.length - 1; i >= 0; i--) {
     if (player.touch(walls[i]) || player.x < -2 || player.x > 700) {
-      if (dir == "arriba") player.y += speed;
-      if (dir == "abajo") player.y -= speed;
-      if (dir == "derecha") player.x -= speed;
-      if (dir == "izquierda") player.x += speed;
+      locked();
     }
   }
   for (var i = stone.length - 1; i >= 0; i--) {
     if (player.touch(stone[i])) {
-      if (dir == "arriba") player.y += speed;
-      if (dir == "abajo") player.y -= speed;
-      if (dir == "derecha") player.x -= speed;
-      if (dir == "izquierda") player.x += speed;
+      locked();
     }
   }
 }
@@ -125,23 +116,18 @@ function run() {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
   walk = dirPlayer[0];
-
   player = new Cuadrado(globalX, globalY, 20, 20);
-
   for (var x = 0; x <= 39; x++) {
     dirPlayer[x].src = "assets/player/" + (x + 1) + ".png";
   }
-  for (var x = 0; x <= 6; x++) {
+  for (var x = 0; x <= 2; x++) {
     sounds[x].src = "assets/sound/" + (x + 1) + ".mp3";
   }
-
   iPlayer.src = "assets/player/1.png";
   fondo.src = "assets/background.png";
-
   iStone.src = "assets/piedra.png";
   iWallsH.src = "assets/baya2.png";
   iWallsV.src = "assets/arbusto1.png";
-
   border();
   verticalWall();
   horizontalWall();
@@ -164,38 +150,37 @@ const verticalWall = () => {
   }
   (w = 250), (x = 150); //Segunda columna vertical
   for (var y = 450; y >= 50; y -= 50) {
-    walls.push(new Cuadrado(x, y, w, tamImage, "grey"));
+    walls.push(new Cuadrado(x, y, w, tamImage));
     x = y == 100 || y == 200 || y == 300 || y == 400 ? (x += 55) : (x -= 5);
     w -= 25;
   }
   (x = 430), (w = 0); //Tercera columna vertical
   for (var y = 50; y <= 450; y += 50) {
     w = w + 20 >= 200 ? w - 50 : w + 50;
-    walls.push(new Cuadrado(x, y, w, tamImage, "grey"));
+    walls.push(new Cuadrado(x, y, w, tamImage));
     x = x - 20 < 410 ? 430 : x - 30;
   }
   (x = 510), (w = 125); //Cuarta columna vertical
   for (var y = 50; y <= 400; y += 50) {
-    walls.push(new Cuadrado(x, y, w, tamImage, "grey"));
-    x = y == 50 ? 525 : 620;
+    walls.push(new Cuadrado(x, y, w, tamImage));
+    x = y == 50 ? 525 : 630;
   }
 };
 const horizontalWall = () => {
   const stonesXY = [
-    [390, 20],
-    [600, 45],
+    [360, 18],
+    [603, 40],
     [555, 70],
     [430, 70],
     [40, 70],
     [127, 80],
-    [203, 50],
     [535, 120],
     [330, 120],
     [260, 145],
-    [25, 195],
+    [30, 190],
     [430, 170],
     [330, 170],
-    [620, 195],
+    [630, 195],
     [485, 220],
     [170, 220],
     [270, 220],
@@ -203,13 +188,13 @@ const horizontalWall = () => {
     [640, 267],
     [190, 267],
     [400, 267],
-    [25, 300],
+    [32, 300],
     [540, 320],
     [300, 320],
     [620, 345],
     [200, 370],
     [95, 320],
-    [25, 395],
+    [30, 393],
     [455, 365],
     [400, 420],
     [110, 450],
@@ -219,9 +204,8 @@ const horizontalWall = () => {
     [640, 475],
     [665, 475],
   ];
-  for (var x = 0; x <= stonesXY.length - 1; x++) {
+  for (var x = 0; x <= stonesXY.length - 1; x++)
     stone.push(new Cuadrado(stonesXY[x][0], stonesXY[x][1], tamImage, 40));
-  }
 };
 function Cuadrado(x, y, w, h) {
   //atributos
@@ -249,18 +233,16 @@ function Cuadrado(x, y, w, h) {
 } //Clase Cuadro
 function winner(salida) {
   var gif = "";
-  sounds[6].play();
-  if (salida == 1) {
-    gif = "url('./assets/win2.gif')";
-  } else {
-    gif = "url('./assets/win.gif')";
-  }
+  sounds[2].play();
+  if (salida == 1) gif = "url('./assets/win2.gif')";
+  else gif = "url('./assets/win.gif')";
+
   stop();
   Swal.fire({
     title: `<h1 style="color: #fff; font-size: 2.5rem;">¡Felicidades! \n Has llegado a la salida ${salida}</h1>`,
     html: `<p style="color: #fff;">Terminaste el juego en ${time[2]}:${time[1]}:${time[0]}</p>`,
     background: "transparent",
-    confirmButtonText: "Aceptar",
+    confirmButtonText: '<p style="padding: 0 1rem">Aceptar</p>',
     confirmButtonColor: "#2E6D1D",
     backdrop: `
       rgba(0,0,123,0.4)
@@ -269,15 +251,15 @@ function winner(salida) {
       no-repeat
     `,
   }).then((value) => {
-    if (value) {
-      run();
-    }
+    if (value) run();
   });
 } //Alerta de ganador
 function warning() {
-  sounds[5].play();
+  sounds[1].play();
+  move = false;
   Swal.fire({
-    title: "<h1 style='color: #000;'>Por ahí no es</h1>",
+    title:
+      "<h1 style='color: #cc2626; margin:-10rem 0 0 20rem;'>POR AHÍ NO</h1>",
     background: "transparent",
     backdrop: `
       rgba(0,0,123,0.4)
@@ -286,7 +268,7 @@ function warning() {
       no-repeat
     `,
     showConfirmButton: false,
-    timer: 1300,
+    timer: 1400,
   });
 } //Alerta de camino equivocado
 function startTime() {
@@ -322,41 +304,48 @@ function reset() {
   acumularTime = 0;
   time[0] = time[1] = time[2] = "00";
 } //reset del tiempo
+function locked() {
+  if (dir == "arriba") player.y += speed;
+  if (dir == "abajo") player.y -= speed;
+  if (dir == "derecha") player.x -= speed;
+  if (dir == "izquierda") player.x += speed;
+}
+function menu() {
+  Swal.fire({
+    title: "Controles",
+    html: `<p>Utilice la tecla Enter para abrir éste menú.</p><p>Utilice la tecla Ctrl para pausar y reanudar la música.</p><p>Utilice las flechas del teclado para moverse.</p>
+    <img src="./assets/controles.png">`,
+    confirmButtonText: "Aceptar",
+    showClass: {
+      popup: "animate__animated animate__fadeInDown",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp",
+    },
+  });
+}
 document.addEventListener(
   "keydown",
   function (evt) {
     lastPress = evt.keyCode;
-
     move =
       lastPress == 38 || lastPress == 39 || lastPress == 40 || lastPress == 37
         ? true
         : false;
 
-    if (lastPress == 32)
-      sounds[2].muted = sounds[2].muted == true ? false : true;
-
-    if (player.x < 0 && player.y < 70) {
-      warning();
-    }
-    if (player.x > 700 && player.y > 400) {
-      winner(1);
-    }
-    if (player.x < 0 && player.y > 100) {
-      winner(2);
-    }
+    if (lastPress == 17)
+      sounds[0].muted = sounds[0].muted == true ? false : true;
   },
   false
 );
-
 document.addEventListener(
   "keyup",
   function (evt) {
-    lastPress = evt.keyCode;
     move = false;
+    if (lastPress == 13) menu();
   },
   false
 );
-
 window.requestAnimationFrame = (function () {
   return (
     window.requestAnimationFrame ||
@@ -367,4 +356,7 @@ window.requestAnimationFrame = (function () {
     }
   );
 })();
+window.onload = () => {
+  // menu();
+};
 window.addEventListener("load", run, false);
