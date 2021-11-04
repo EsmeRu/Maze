@@ -33,7 +33,7 @@ function paint(ctx) {
     var wY = walls[i].y;
 
     while (walls[i].h + walls[i].y >= wY + iWallsH.width) {
-      ctx.drawImage(iWallsH, walls[i].x - 3, wY);
+      ctx.drawImage(iWallsH, walls[i].x - 5, wY);
       wY += 25;
     }
     while (walls[i].w + walls[i].x >= wX + iWallsV.width) {
@@ -64,7 +64,6 @@ function update() {
       playedPromise.catch((e) => {
         if (e.name === "NotAllowedError" || e.name === "NotSupportedError") {
           console.log(e.name);
-          run();
         }
       });
     }
@@ -339,7 +338,7 @@ document.addEventListener(
     if (player.x < 0 && player.y < 70) {
       warning();
     }
-    if (player.x > 700) {
+    if (player.x > 700 && player.y > 400) {
       winner(1);
     }
     if (player.x < 0 && player.y > 100) {
