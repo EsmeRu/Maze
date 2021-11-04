@@ -2,7 +2,7 @@ var canvas = null;
 var ctx = null;
 var lastPress;
 var dir = 68,
-  speed = 4,
+  speed = 2,
   data = 0;
 var globalX = 20,
   globalY = 30;
@@ -23,6 +23,7 @@ for (var x = 0; x <= 6; x++) sounds[x] = new Audio();
 for (var x = 0; x <= 39; x++) dirPlayer[x] = new Image();
 var walk = null;
 var tamImage = 20;
+var move = false;
 
 //Se encarga de pintar todo en pantalla
 function paint(ctx) {
@@ -68,6 +69,33 @@ function update() {
       });
     }
   };
+
+  if (move) {
+    if (lastPress == 38) {
+      dir = "arriba";
+      player.y -= speed;
+      data = 20;
+    }
+    if (lastPress == 40) {
+      dir = "abajo";
+      player.y += speed;
+      data = 0;
+    }
+    if (lastPress == 39) {
+      dir = "derecha";
+      player.x += speed;
+      data = 30;
+    }
+    if (lastPress == 37) {
+      dir = "izquierda";
+      player.x -= speed;
+      data = 10;
+    }
+    walk =
+      dirPlayer.indexOf(walk) >= data && dirPlayer.indexOf(walk) <= data + 8
+        ? dirPlayer[dirPlayer.indexOf(walk) + 1]
+        : dirPlayer[data];
+  }
 
   for (var i = walls.length - 1; i >= 0; i--) {
     if (player.touch(walls[i]) || player.x < -2 || player.x > 700) {
@@ -296,42 +324,18 @@ function reset() {
   time[0] = time[1] = time[2] = "00";
 } //reset del tiempo
 document.addEventListener(
-  //Controles
   "keydown",
   function (evt) {
     lastPress = evt.keyCode;
-    data = null;
-    if (lastPress == 38) {
-      dir = "arriba";
-      player.y -= speed;
-      data = 20;
-    }
-    if (lastPress == 40) {
-      dir = "abajo";
-      player.y += speed;
-      data = 0;
-    }
-    if (lastPress == 39) {
-      dir = "derecha";
-      player.x += speed;
-      data = 30;
-    }
-    if (lastPress == 37) {
-      dir = "izquierda";
-      player.x -= speed;
-      data = 10;
-    }
-    if (lastPress == 32) {
-      if (sounds[2].muted == true) sounds[2].muted = false;
-      else sounds[2].muted = true;
-    }
 
-    if (data != null) {
-      walk =
-        dirPlayer.indexOf(walk) >= data && dirPlayer.indexOf(walk) <= data + 8
-          ? dirPlayer[dirPlayer.indexOf(walk) + 1]
-          : dirPlayer[data];
-    }
+    move =
+      lastPress == 38 || lastPress == 39 || lastPress == 40 || lastPress == 37
+        ? true
+        : false;
+
+    if (lastPress == 32)
+      sounds[2].muted = sounds[2].muted == true ? false : true;
+
     if (player.x < 0 && player.y < 70) {
       warning();
     }
@@ -344,6 +348,16 @@ document.addEventListener(
   },
   false
 );
+
+document.addEventListener(
+  "keyup",
+  function (evt) {
+    lastPress = evt.keyCode;
+    move = false;
+  },
+  false
+);
+
 window.requestAnimationFrame = (function () {
   return (
     window.requestAnimationFrame ||
